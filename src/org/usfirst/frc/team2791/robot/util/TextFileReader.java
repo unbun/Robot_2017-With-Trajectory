@@ -2,75 +2,39 @@ package org.usfirst.frc.team2791.robot.util;
 
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
- 
+
 /**
  * Read a text file into a string.
  *
- * @author Jared341
+ * @author unbun
  */
 public class TextFileReader {
 
-  private FileConnection file_connection_ = null;
-  private BufferedReader reader_ = null;
-  
-  public TextFileReader(String uri) {
-    try {
-      // Open the new file
-      file_connection_ = (FileConnection) Connector.open(uri);
-      if (!file_connection_.exists()) {
-        System.err.println("Could not find specified file!");
-        return;
-      }
+	private String file;  
+	
+	public TextFileReader(String uri) {
+		file=uri;
+	}
+	
+	public String readWholeFile() throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader (file));
+		String line = null;
+		StringBuilder  stringBuilder = new StringBuilder();
+		String ls = System.getProperty("line.separator");
 
-      // Make an I/O adapter sandwich to actually get some text out
-      reader_ = new BufferedReader(
-              new InputStreamReader(file_connection_.openInputStream()));
-      
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println("Could not open file connection!");
-      closeFile();
-    }
-  }
+		try {
+			while((line = reader.readLine()) != null) {
+				stringBuilder.append(line);
+				stringBuilder.append(ls);
+			}
+			return stringBuilder.toString();
+		} finally {
+			reader.close();
 
-  private void closeFile() {
-    try {
-      // If we have a file open, close it
-      if (file_connection_ != null) {
-        if (reader_ != null) {
-          reader_.close();
-        }
-        if (file_connection_.isOpen()) {
-          file_connection_.close();
-        }
-      }
-    } catch (IOException e) {
-      System.err.println("Could not close file");
-    }
-  }
-
-  // Returns null at end of file
-  public String readLine() {
-    String line = null;
-    try {
-      line = reader_.readLine();
-    } catch (IOException e) {
-      e.printStackTrace();
-      closeFile();
-    }
-    return line;
-  }
-  
-  public String readWholeFile() {
-    StringBuffer buffer = new StringBuffer();
-    String line;
-    while ((line = readLine()) != null) {
-      buffer.append(line);
-      buffer.append("\n");
-    }
-    return buffer.toString();
-  }
+		}
+	}
 }
