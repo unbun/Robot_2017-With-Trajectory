@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * PID + Feedforward controller for following a Trajectory.
+ * contains calculate method, which uses feedfoward as the feeback loop
  *
  * @author Jared341
+ * @author unbun
  */
 public class TrajectoryFollower {
 
@@ -53,10 +55,10 @@ public class TrajectoryFollower {
       last_error_ = error;
       current_heading = segment.heading;
       current_segment++;
-      SmartDashboard.putNumber(name + "FollowerSensor", distance_so_far);
-      SmartDashboard.putNumber(name + "FollowerGoal", segment.pos);
-      SmartDashboard.putNumber(name + "FollowerError", error);
+      debug(segment, distance_so_far, error, kp, ki, kd);
       return output;
+      
+      debug()
     } else {
       return 0;
     }
@@ -76,5 +78,23 @@ public class TrajectoryFollower {
   
   public int getNumSegments() {
     return profile_.getNumSegments();
+  }
+  
+  public void debug(){
+      
+      SmartDashboard.putNumber(name + "Pos Sensed", distance_so_far);
+      SmartDashboard.putNumber(name + "Pos Goal", segment.pos);
+      SmartDashboard.putNumber(name + "Pos Error", segment.pos-distance_so_far);
+      
+      
+      SmartDashboard.putNumber(name + "Vel Sensed", Robot.drivetrain.getAverageVelocity());
+      SmartDashboard.putNumber(name + "Vel Goal", segment.vel);
+      SmartDashboard.putNumber(name + "Vel Error", Robot.drivetrain.getAverageVelocity()-segment.vel);
+    
+    
+      SmartDashboard.putNumber(name + "Acc Sensed", Robot.drivetrain.getAverage());
+      SmartDashboard.putNumber(name + "Acc Goal", segment.acc);
+      SmartDashboard.putNumber(name + "Acc Error", Robot.drivetrain.getAverageAcceleration()-segment.acc);
+  }
   }
 }
